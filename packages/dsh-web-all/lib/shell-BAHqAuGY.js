@@ -1,21 +1,4 @@
-//#region src/degraded.ts
-const degraded = /* @__PURE__ */ new Map();
-/** Record (or refresh) one plugin's degraded state. Errors are logged here once. */
-function recordDegraded(plugin, stage, error) {
-	const message = error instanceof Error ? error.stack ?? error.message : String(error);
-	console.error(`[dsh-web-all] plugin degraded (${stage}): ${plugin}\n${message}`);
-	degraded.set(plugin, {
-		plugin,
-		stage,
-		message,
-		at: (/* @__PURE__ */ new Date()).toISOString()
-	});
-}
-/** Snapshot of all currently degraded plugins. */
-function listDegraded() {
-	return [...degraded.values()];
-}
-//#endregion
+import { listDegraded, recordDegraded } from "./degraded.js";
 //#region src/rows.ts
 /**
 * Active-row ledger for the dsh-web-all fault-isolation shell. Each family
@@ -48,6 +31,8 @@ function listActiveRows() {
 }
 //#endregion
 //#region src/shell.ts
+/** Required services: none — the shell must activate before anything else. */
+const inject = [];
 /** Loopback-fenced degraded-state route (installed once per shell context). */
 function makeDegradedRoute() {
 	return {
@@ -106,6 +91,14 @@ function makeRowsRoute() {
 */
 let healthRouteRefCount = 0;
 let unregisterHealthRoutes;
+/** For test teardown and test isolation only. */
+function _resetDegradedRouteForTest() {
+	healthRouteRefCount = 0;
+	try {
+		unregisterHealthRoutes?.();
+	} catch {}
+	unregisterHealthRoutes = void 0;
+}
 /**
 * Hold both health routes (degraded + rows) for this shell entry's lifetime.
 * Every shell entry calls this — including the config-less self row — so the
@@ -160,7 +153,7 @@ function isOverrideShape(config) {
 */
 const RETIRED_PLUGINS = /* @__PURE__ */ new Set(["@linxin666/dsh-perf", "@linxin666/dsh-desktop-launcher"]);
 /** Apply one shell entry: mount the configured real plugin behind an isolation boundary. */
-async function apply$1(ctx, config) {
+async function apply(ctx, config) {
 	holdHealthRoutes(ctx);
 	const spec = config?.plugin;
 	if (typeof spec === "string" && RETIRED_PLUGINS.has(spec)) return;
@@ -196,12 +189,6 @@ async function apply$1(ctx, config) {
 	}
 }
 //#endregion
-//#region src/index.ts
-/** Required services: none — the shell must activate before anything else. */
-const inject = [];
-/** Host plugin body: mount the configured real plugin behind the shell boundary. */
-function apply(ctx, config) {
-	return apply$1(ctx, config);
-}
-//#endregion
-export { apply, inject };
+export { apply as n, inject as r, _resetDegradedRouteForTest as t };
+
+//# sourceMappingURL=shell-BAHqAuGY.js.map
