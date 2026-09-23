@@ -5,9 +5,13 @@
  * market-build — regenerate the dsh-market.com static site assets.
  *
  * Single source of truth: the repository itself.
- *   skins   — packages/skins/skin-center/skins/<id>/skin.json        (v2)
- *   pets    — packages/dsh-pet/assets/<dir>/pet.json                 (v2)
- *   plugins — packages/dsh-community-plugins/community.json
+ *   skins   — .market-inputs/skins/<id>/skin.json                   (v2)
+ *   pets    — .market-inputs/pet/<dir>/pet.json                      (v2)
+ *   plugins — .market-inputs/community/community.json
+ *
+ * The skin, pet and community-index content lives in its own repositories;
+ * scripts/market-fetch-inputs.mjs unpacks the commits pinned in
+ * market-inputs.lock.json into .market-inputs/.
  *   presets — packages/dsh-preset-center/presets/<id>/preset.yml
  *             + presets/catalog.json (market metadata: author, version,
  *               tags, English copy); the preset directory is the asset
@@ -172,7 +176,7 @@ function scanSkins() {
   if (!fs.existsSync(SKINS_DIR)) return []
   const skins = []
   const dirs = fs.readdirSync(SKINS_DIR).sort()
-  if (!dirs.length) throw new Error('no skins found under packages/skins/skin-center/skins/')
+  if (!dirs.length) throw new Error(`no skins found under ${SKINS_DIR}; run node scripts/market-fetch-inputs.mjs`)
   for (const name of dirs) {
     const dir = path.join(SKINS_DIR, name)
     if (!fs.statSync(dir).isDirectory()) continue
