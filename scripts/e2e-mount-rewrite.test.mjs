@@ -225,16 +225,42 @@ test('family-dir mode: every family dep rewrites to a patched same-named copy', 
   assert.equal(pkg.dependencies['react'], '^18.3.1')
 })
 
-test('family-dir mode: missing tarball fails loudly', async () => {
+test('family-dir mode: a workspace package the directory misses fails loudly', async () => {
   const tmp = makeTmp()
+  const root = path.join(tmp, 'repo')
+  makeWorkspace(root)
   const familyDir = path.join(tmp, 'family')
   fs.mkdirSync(familyDir, { recursive: true })
   makeTgz(familyDir, { name: '@linxin666/dsh-a', version: '0.1.0' })
   const pkgPath = makeTarballPkg(path.join(tmp, 'tarball'))
   await assert.rejects(
-    rewriteDependencies({ pkgPath, root: tmp, familyDir }),
+    rewriteDependencies({ pkgPath, root, familyDir }),
     /缺少本地 tarball/,
   )
+})
+
+test('family-dir mode: a family package outside this workspace stays on the registry', async () => {
+  const tmp = makeTmp()
+  const root = path.join(tmp, 'repo')
+  makeWorkspace(root)
+  // The extracted satellites are family-scoped but not built here, so the
+  // override cannot cover them and they must keep resolving from npm.
+  const familyDir = path.join(tmp, 'family')
+  fs.mkdirSync(familyDir, { recursive: true })
+  makeTgz(familyDir, { name: '@linxin666/dsh-a', version: '0.1.0' })
+  const pkgPath = writePkg(path.join(tmp, 'tarball'), {
+    name: '@linxin666/dsh-web-all',
+    version: '9.9.9',
+    dependencies: {
+      '@linxin666/dsh-a': '0.1.0',
+      '@linxin666/dsh-pet': '^0.3.24',
+    },
+  })
+  const report = await rewriteDependencies({ pkgPath, root, familyDir })
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+  assert.match(pkg.dependencies['@linxin666/dsh-a'], /^file:.*dsh-a\.tgz$/)
+  assert.equal(pkg.dependencies['@linxin666/dsh-pet'], '^0.3.24')
+  assert.ok(report.some(line => line.includes('保持 registry 安装')))
 })
 
 test('auto mode: nested unpublished family deps rewrite inside the packed tarball', async () => {
