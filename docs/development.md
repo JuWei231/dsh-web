@@ -35,7 +35,7 @@ pnpm libs:check        # 校验已提交 lib/ 产物与源码指纹一致性
 pnpm coverage:check    # 覆盖率棘轮（Tier 2，整仓约一分钟）
 ```
 
-改动提交前至少跑 `pnpm typecheck && pnpm test && pnpm test:standards && pnpm docs:check && pnpm i18n:check`；涉及聚合包、市场或皮肤中心时运行对应 `pnpm aggregate:check` / `pnpm market:check` / `pnpm skin-center:check`；CI 会全量跑所有门禁。
+改动提交前至少跑 `pnpm typecheck && pnpm test && pnpm test:standards && pnpm docs:check && pnpm i18n:check`；涉及聚合包或市场时运行对应 `pnpm aggregate:check` / `pnpm market:check`；皮肤、宠物与社区插件索引的门禁在各自的独立仓运行；CI 会全量跑所有门禁。
 
 ## 测试与门禁
 

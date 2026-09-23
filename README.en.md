@@ -404,7 +404,7 @@ You can also join our [Discord community](https://discord.gg/6v4gm9u4S), or subm
 
 - Review [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request; attach screenshots or evidence for user-facing modifications;
 - Follow Conventional Commits (such as `fix(task-board): resolve state sync issue`); emoji usage is prohibited across code, documentation, and commit messages;
-- Scaffold new plugins and skins using official scripts: `node scripts/dsh-plugin-new <name>` and `node scripts/dsh-skin-new`;
+- Scaffold new plugins with `node scripts/dsh-plugin-new <name>`; new skins are scaffolded in the [dsh-skins](https://github.com/zhu1090093659/dsh-skins) repository with `node scripts/dsh-skin-new.cjs <id>`;
 - Verify repository quality gates before submitting: `pnpm typecheck && pnpm test && pnpm docs:check`; complete development workflow in [docs/development.md](docs/development.md).
 
 ## License

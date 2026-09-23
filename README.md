@@ -404,7 +404,7 @@ dsh plugin --profile web add dsh-better-sidebar@latest                          
 
 - 提交代码前请查阅 [CONTRIBUTING.md](CONTRIBUTING.md)；涉及用户界面的修改请附带测试用例或验证截图；
 - 提交信息严格遵循 Conventional Commits 规范（例如 `fix(task-board): 修复状态同步问题`），代码、文档与 commit 信息全程杜绝使用 emoji；
-- 新建插件或皮肤请使用标准脚手架生成：`node scripts/dsh-plugin-new <name>`、`node scripts/dsh-skin-new`；
+- 新建插件请使用标准脚手架生成：`node scripts/dsh-plugin-new <name>`；新建皮肤请在 [dsh-skins](https://github.com/zhu1090093659/dsh-skins) 仓用 `node scripts/dsh-skin-new.cjs <id>` 生成；
 - 提交前请确保通过本地质量门禁：`pnpm typecheck && pnpm test && pnpm docs:check`；完整开发流程见 [docs/development.md](docs/development.md)。
 
 ## 许可证

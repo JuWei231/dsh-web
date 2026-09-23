@@ -200,7 +200,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    DEV["dev 分支改动"] --> G["门禁：typecheck、test、docs:check、i18n:check、aggregate:check、market:check、skin-center:check、libs:check、test:scripts"]
+    DEV["dev 分支改动"] --> G["门禁：typecheck、test、docs:check、i18n:check、aggregate:check、market:check、libs:check、test:scripts"]
     G --> M["维护者集成：dev 测试通过后合入 main"]
     M --> T["从 main 打 vX.Y.Z tag"]
     T -- "release.yml + verify-version" --> NPM["npm 发布 @linxin666/dsh-*"]
