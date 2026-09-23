@@ -36,7 +36,7 @@ The market build no longer reads skin or pet assets â€” or the community index â
 
 ### Release order
 
-The satellites must publish before this repository switches, and the reason is a service that no longer exists: the published `0.3.24` family packages still `inject` the retired `settingsScope` service, and any client half mounted outside the aggregate's inlined bundle waits for it forever. While `pet` was inlined its stale publish was masked; as an external row it fails the same way `skin-center` already did. The mount smoke (`scripts/e2e-mount.sh`) is therefore green against `FAMILY_TGZS_DIR` (the checkout's own tarballs) and red against the registry until the satellites release a build containing the migration.
+The satellites release before this repository switches, because the aggregate mounts them as npm rows and the mount smoke asserts the registry path. `@linxin666/dsh-web-all` depends on the three satellite packages by semver range, and each satellite carries its own version line: the `0.3.25` releases hold the 0.1.7-rc.1 migration that removed the retired `settingsScope` inject, so the aggregate's mount smoke (`scripts/e2e-mount.sh`) is green on the registry path while its `FAMILY_TGZS_DIR` override covers the packages this repository builds.
 
 ## Alternatives considered
 

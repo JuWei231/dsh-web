@@ -36,7 +36,7 @@ Status: implemented
 
 ### 发布顺序
 
-卫星必须先发布，本仓才能切换，原因是一个已不存在的服务：registry 上的 `0.3.24` 家族包仍 `inject` 已退役的 `settingsScope`，而任何在聚合包内联 bundle 之外挂载的浏览器半区都会永远等它。`pet` 被内联时那份陈旧发布被掩盖了；变成外部行后，它会以与 `skin-center` 相同的方式失败。因此挂载冒烟（`scripts/e2e-mount.sh`）在用 `FAMILY_TGZS_DIR`（本次检出自打的 tarball）时是绿的，直连 registry 时是红的，直到卫星发出含该迁移的版本。
+卫星先发版，本仓才切换，因为聚合包把它们作为 npm 外部行挂载，而挂载冒烟断言的是 registry 路径。`@linxin666/dsh-web-all` 以 semver 范围依赖三个卫星包，每个卫星保有自己的版本线：`0.3.25` 携带移除已退役 `settingsScope` 注入的 0.1.7-rc.1 迁移，因此聚合包的挂载冒烟（`scripts/e2e-mount.sh`）在 registry 路径上是绿的，而它的 `FAMILY_TGZS_DIR` 覆盖目录只覆盖本仓构建的包。
 
 ## 备选方案
 
