@@ -1306,7 +1306,7 @@ importers:
   packages/dsh-web-all:
     dependencies:
       '@linxin666/dsh-client-ui-community-plugins':
-        specifier: workspace:*
+        specifier: ^0.3.24
         version: link:../dsh-community-plugins
       '@linxin666/dsh-client-ui-git-graph':
         specifier: workspace:*
@@ -1327,7 +1327,7 @@ importers:
         specifier: workspace:*
         version: link:../dsh-skill-explorer
       '@linxin666/dsh-client-ui-skin-center':
-        specifier: workspace:*
+        specifier: ^0.3.24
         version: link:../skins/skin-center
       '@linxin666/dsh-client-ui-task-board':
         specifier: workspace:*
@@ -1342,7 +1342,7 @@ importers:
         specifier: workspace:*
         version: link:../dsh-liangshen
       '@linxin666/dsh-pet':
-        specifier: workspace:*
+        specifier: ^0.3.24
         version: link:../dsh-pet
       '@linxin666/dsh-remote-web-ui':
         specifier: workspace:*
