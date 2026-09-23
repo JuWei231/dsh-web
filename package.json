@@ -2,7 +2,7 @@
   "name": "dsh-web",
   "version": "0.1.1",
   "private": true,
-  "description": "DeepSeek Harness Web GUI 插件全家桶 + 皮肤集合。皮肤是纯资产目录（packages/skins/skin-center/skins/<id>），由皮肤中心包统一加载。",
+  "description": "DeepSeek Harness Web GUI 插件全家桶。皮肤、宠物与社区插件索引已拆分为独立仓库（dsh-skins / dsh-pet / dsh-community-plugins），本仓通过 npm 包内置它们。",
   "dsh": {
     "bundle": {
       "patch": "./packages/dsh-web-all/cordis.patch.yml"
@@ -24,10 +24,6 @@
     "test:standards:write": "node scripts/test-standards.mjs --write-baseline",
     "typecheck": "pnpm -r typecheck",
     "aggregate:check": "node scripts/aggregate.mjs --check",
-    "skin-center:check": "node scripts/skin-center-catalog-check --check",
-    "skin-hooks:generate": "node scripts/skin-hooks-registry.mjs",
-    "skin-hooks:check": "node scripts/skin-hooks-registry.mjs --check",
-    "community:check": "node scripts/community-index --check",
     "runtime-deps:check": "node scripts/runtime-deps-check.mjs",
     "libs:check": "node scripts/lib-artifact-check.mjs",
     "libs:write": "node scripts/lib-artifact-check.mjs --write",

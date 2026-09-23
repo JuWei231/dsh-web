@@ -129,8 +129,8 @@ PR 类别勾选「皮肤 / 皮肤中心」。皮肤收录到我们部署的 dsh-
 
 ### 宠物增加（新宠物收录）
 
-按 [dsh-pet README](packages/dsh-pet/README.zh.md) 的宠物契约新增
-`packages/dsh-pet/assets/<id>/`（`pet.json` v2 + 8 列 × 9 行图集，
+宠物已迁至独立仓 [dsh-pet](https://github.com/zhu1090093659/dsh-pet)：按该仓 README 的宠物契约
+在 `assets/<id>/` 下新增（`pet.json` v2 + 8 列 × 9 行图集，
 可选 `previews/`、`voice.json` 与状态装饰），在
 `src/registry.test.ts` 增加该 manifest 的归一化断言，同步维护 dsh-pet
 README 中英三件套（`pnpm docs:write-pair dsh-pet`），

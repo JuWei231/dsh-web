@@ -98,7 +98,7 @@ node scripts/dsh-plugin-new <name>   # 生成 packages/<name>/ 骨架
 ### 新增皮肤
 
 ```sh
-node scripts/dsh-skin-new          # 生成 packages/skins/skin-center/skins/<id>/ 纯资产骨架
+# 皮肤与宠物已迁至独立仓：骨架与校验在 dsh-skins / dsh-pet 仓内运行
 node scripts/capture-previews <id>  # 重拍 preview/{light,dark}.png
 pnpm market:build                # 刷新市场产物（market/dist）
 node scripts/skins-montage.mjs    # 重排根 README 皮肤一览图（docs/images/skins-montage.png）

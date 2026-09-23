@@ -13,6 +13,12 @@
       "sha": "4ee0c7657d9f04d41801ba25c74258cc93d348ef",
       "path": "assets",
       "target": "pet"
+    },
+    "community": {
+      "repo": "zhu1090093659/dsh-community-plugins",
+      "sha": "fe4843ab851e317c432b245a40f835a27382570f",
+      "path": ".",
+      "target": "community"
     }
   }
 }

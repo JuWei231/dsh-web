@@ -71,10 +71,13 @@ function resolveFamilyAsset(specifier, fallback) {
     return fallback
   }
 }
-const PLUGINS_FILE = resolveFamilyAsset(
-  '@linxin666/dsh-client-ui-community-plugins/community.json',
-  path.join(ROOT, 'packages', 'dsh-community-plugins', 'community.json'),
-)
+const INPUT_COMMUNITY_INDEX = path.join(MARKET_INPUTS_DIR, 'community', 'community.json')
+const PLUGINS_FILE = fs.existsSync(INPUT_COMMUNITY_INDEX)
+  ? INPUT_COMMUNITY_INDEX
+  : resolveFamilyAsset(
+      '@linxin666/dsh-client-ui-community-plugins/community.json',
+      path.join(ROOT, 'packages', 'dsh-community-plugins', 'community.json'),
+    )
 const SKIN_CENTER_LIB = resolveFamilyAsset(
   '@linxin666/dsh-client-ui-skin-center',
   path.join(ROOT, 'packages', 'skins', 'skin-center', 'lib', 'index.js'),
@@ -230,7 +233,7 @@ function scanSkins() {
     item.files = listFiles(dir)
     // Source GitHub link: preserve an explicit sourceUrl, otherwise point to
     // this repository's catalog directory so every published skin is discoverable.
-    item.repo = meta.sourceUrl || `https://github.com/zhu1090093659/dsh-web/tree/dev/packages/skins/skin-center/skins/${name}`
+    item.repo = meta.sourceUrl || `https://github.com/zhu1090093659/dsh-skins/tree/main/skins/${name}`
     if (Object.keys(contributes).length) item.contributes = contributes
     if (meta.requires) item.requires = meta.requires
     if (meta.facets) item.facets = meta.facets

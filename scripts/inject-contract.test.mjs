@@ -33,7 +33,6 @@ const APPROVED_INJECT_MODULES = [
   '@deepseek-ai/dsh-client-ui-settings',
   '@deepseek-ai/dsh-client-ui-sidebar',
   '@deepseek-ai/dsh-client-ui-slots',
-  '@deepseek-ai/dsh-client-ui-theme',
   '@deepseek-ai/dsh-client-ui-workspace',
 ]
 

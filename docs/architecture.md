@@ -31,7 +31,7 @@ flowchart TB
 
 ```text
 dsh-web/
-├── packages/            # 插件 monorepo：功能插件、皮肤中心、聚合包 dsh-web-all
+├── packages/            # 插件 monorepo：功能插件与聚合包 dsh-web-all（皮肤/宠物/社区索引已迁出）
 │   ├── <name>/          # 独立 cordis bundle 包（host + client 两半区）
 │   └── skins/           # skin-center：唯一皮肤包，skins/ 下为纯资产皮肤目录
 ├── shared/              # 跨包事实源：构建预设、平台模块表、host 与 client 运行时模块
@@ -102,7 +102,7 @@ flowchart TB
 
 ## 皮肤系统
 
-皮肤是纯资产目录：仓库内位于皮肤中心的 `skins/`（42 个内置皮肤），npm 包 `files` 白名单只随发默认皮肤 blue-fantasy，其余由创意工坊按需安装到 `$DSH_HOME/skins/<id>/`（同 id 遮蔽内置）。skin-repo 双源发现并做 v2 manifest fail-closed 校验；样式经 `transformSkinCss` 安全管线强制作用域到 `html[data-dsh-skin]` 并按白名单过滤；启用互斥由 `dsh-skin use` 客户端原子切换管理，不改 `cordis.patch.yml`。插件输出语义属性（`data-dsh-plugin` / `data-dsh-part`）才承诺完整换肤覆盖，契约见 [semantic-attrs-v1.md](../packages/skins/skin-center/contracts/semantic-attrs-v1.md)。
+皮肤是纯资产目录：事实源在独立仓 [dsh-skins](https://github.com/zhu1090093659/dsh-skins) 的 `skins/`（42 个内置皮肤，本仓按 [market-inputs.lock.json](../market-inputs.lock.json) 固定的提交拉取），npm 包 `files` 白名单只随发默认皮肤 blue-fantasy，其余由创意工坊按需安装到 `$DSH_HOME/skins/<id>/`（同 id 遮蔽内置）。skin-repo 双源发现并做 v2 manifest fail-closed 校验；样式经 `transformSkinCss` 安全管线强制作用域到 `html[data-dsh-skin]` 并按白名单过滤；启用互斥由 `dsh-skin use` 客户端原子切换管理，不改 `cordis.patch.yml`。插件输出语义属性（`data-dsh-plugin` / `data-dsh-part`）才承诺完整换肤覆盖，契约见 [semantic-attrs-v1.md](https://github.com/zhu1090093659/dsh-skins/blob/main/contracts/semantic-attrs-v1.md)。
 
 ```mermaid
 flowchart LR
