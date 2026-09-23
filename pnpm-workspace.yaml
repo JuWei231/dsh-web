@@ -148,3 +148,6 @@ minimumReleaseAgeExclude:
   - '@mlgbnb/dsh-archive-manager@1.0.7'
   - '@deepseek-ai/dsh-app-boot@0.1.7-rc.1'
   - '@deepseek-ai/dsh-package-manifest@0.1.7-rc.1'
+  - '@linxin666/dsh-client-ui-community-plugins@0.3.25'
+  - '@linxin666/dsh-client-ui-skin-center@0.3.25'
+  - '@linxin666/dsh-pet@0.3.25'
