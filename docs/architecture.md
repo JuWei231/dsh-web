@@ -115,25 +115,29 @@ flowchart LR
 
 ## 创意工坊与市场站
 
-仓库是市场内容的唯一事实源：皮肤取 skin-center 的 skin.json、宠物取 dsh-pet 的 pet.json、插件取 community.json、预设取 dsh-preset-center 的 presets/、编辑推荐取 market/editor-picks.json（手工维护的皮肤 / 宠物 / 插件引用清单，构建时逐条校验可解析），[scripts/market-build](../scripts/market-build) 派生 `market/dist`（`manifest/{skins,pets,plugins,presets,editor-picks}.json`、预览与试穿资产；产物提交进仓，`market:check` 校验一致）。tryon 试穿壳来自 market/shell 的构建产物，拷入 `dist/tryon/`。部署经 [scripts/deploy-market](../scripts/deploy-market)：先 `market-build --check`，再 wrangler 应用 D1 migrations 并部署 [Worker](../market/worker/wrangler.jsonc)（ASSETS 绑定 dist、Turnstile secret 守卫）；push 到 dev 且触及市场相关路径时由 [deploy-market.yml](../.github/workflows/deploy-market.yml) 自动上架。匿名点赞必须保持 Turnstile 门控并经单个 D1 batch 写入（信任边界见根 [AGENTS.md](../AGENTS.md)）。
+市场内容的事实源随家族拆分分开：[market-inputs.lock.json](../market-inputs.lock.json) 固定皮肤仓 `dsh-skins` 与宠物仓 `dsh-pet` 的提交，[scripts/market-fetch-inputs.mjs](../scripts/market-fetch-inputs.mjs) 按该提交把内容解包到 `.market-inputs/`（不需要历史，只取内容目录）；插件索引 `community.json` 与皮肤样式安全管线 `transformSkinCss` 从聚合包依赖树解析已发布包；预设取 dsh-preset-center 的 presets/、编辑推荐取 market/editor-picks.json（手工维护的皮肤 / 宠物 / 插件引用清单，构建时逐条校验可解析）。[scripts/market-build](../scripts/market-build) 派生 `market/dist`（`manifest/{skins,pets,plugins,presets,editor-picks}.json`、预览与试穿资产；产物提交进仓，`market:check` 校验一致）。tryon 试穿壳来自 market/shell 的构建产物，拷入 `dist/tryon/`。部署经 [scripts/deploy-market](../scripts/deploy-market)：先拉取内容输入并 `market-build --check`，再 wrangler 应用 D1 migrations 并部署 [Worker](../market/worker/wrangler.jsonc)（ASSETS 绑定 dist、Turnstile secret 守卫）；push 到 dev 且触及市场相关路径时由 [deploy-market.yml](../.github/workflows/deploy-market.yml) 自动上架，部署后按 manifest 用 [scripts/market-verify-assets.mjs](../scripts/market-verify-assets.mjs) 逐条校验正式站点能取到每个资产（状态码与字节数都要对得上）。匿名点赞必须保持 Turnstile 门控并经单个 D1 batch 写入（信任边界见根 [AGENTS.md](../AGENTS.md)）。
 
 ```mermaid
 flowchart LR
-    subgraph srcs["仓库事实源"]
-        S1["skin-center：skins 目录各皮肤 skin.json"]
-        S2["dsh-pet：assets 目录各宠物 pet.json"]
-        S3["dsh-community-plugins：community.json"]
+    subgraph srcs["内容事实源"]
+        L["market-inputs.lock.json：皮肤 / 宠物仓提交"]
+        S1["dsh-skins 仓：skins 目录各皮肤 skin.json"]
+        S2["dsh-pet 仓：assets 目录各宠物 pet.json"]
+        S3["@linxin666/dsh-client-ui-community-plugins：community.json（已发布包）"]
         S4["dsh-preset-center：presets 目录"]
         S5["market/editor-picks.json：编辑推荐固定清单"]
     end
-    S1 --> MB["node scripts/market-build"]
-    S2 --> MB
+    L -- "node scripts/market-fetch-inputs.mjs 按提交解包" --> FETCH[".market-inputs/"]
+    S1 -.-> FETCH
+    S2 -.-> FETCH
+    FETCH --> MB["node scripts/market-build"]
     S3 --> MB
     S4 --> MB
     S5 --> MB
     SHELL["market/shell 构建：浏览器版试穿壳"] --> DIST["market/dist（提交产物）"]
     MB --> DIST
     DIST -- "node scripts/deploy-market：wrangler deploy + D1 migrations" --> W["Cloudflare Worker：ASSETS、D1、Turnstile、定时任务"]
+    W -- "node scripts/market-verify-assets.mjs 逐条校验资产" --> VERIFY["部署后资产校验"]
     W --> SITE["dsh-market.com"]
     CARD["创意工坊卡片（dsh-market 插件）"] -- "读清单，一键安装进 DSH_HOME" --> SITE
     CARD -- "点赞等 API（Turnstile 门控）" --> W

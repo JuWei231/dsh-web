@@ -36,14 +36,49 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
+const { createRequire } = require('node:module')
 const { pathToFileURL } = require('node:url')
 const crypto = require('node:crypto')
 const { crc32 } = require('node:zlib')
 
 const ROOT = path.resolve(__dirname, '..')
-const SKINS_DIR = path.join(ROOT, 'packages', 'skins', 'skin-center', 'skins')
-const PETS_DIR = path.join(ROOT, 'packages', 'dsh-pet', 'assets')
-const PLUGINS_FILE = path.join(ROOT, 'packages', 'dsh-community-plugins', 'community.json')
+/**
+ * Content sources. The skin and pet assets live in their own repositories
+ * (dsh-skins, dsh-pet) since the family split; scripts/market-fetch-inputs.mjs
+ * unpacks the pinned commits into MARKET_INPUTS_DIR. The in-repo paths remain
+ * as a fallback so the build keeps working from a checkout that still carries
+ * the packages (migration window and the fixture-based script tests).
+ */
+const MARKET_INPUTS_DIR = process.env.MARKET_INPUTS_DIR
+  ? path.resolve(process.env.MARKET_INPUTS_DIR)
+  : path.join(ROOT, '.market-inputs')
+const IN_REPO_SKINS_DIR = path.join(ROOT, 'packages', 'skins', 'skin-center', 'skins')
+const IN_REPO_PETS_DIR = path.join(ROOT, 'packages', 'dsh-pet', 'assets')
+const SKINS_DIR = fs.existsSync(path.join(MARKET_INPUTS_DIR, 'skins')) ? path.join(MARKET_INPUTS_DIR, 'skins') : IN_REPO_SKINS_DIR
+const PETS_DIR = fs.existsSync(path.join(MARKET_INPUTS_DIR, 'pet')) ? path.join(MARKET_INPUTS_DIR, 'pet') : IN_REPO_PETS_DIR
+/**
+ * Data sources that ship inside a published package: the community index and
+ * the skin-center CSS pipeline. Resolving through the aggregate's dependency
+ * tree keeps them pinned to the same version the runtime consumes, and keeps
+ * working after the packages leave this repository.
+ */
+const AGGREGATE_DIR = path.join(ROOT, 'packages', 'dsh-web-all')
+const marketRequire = createRequire(path.join(ROOT, 'scripts', 'market-build'))
+function resolveFamilyAsset(specifier, fallback) {
+  try {
+    return marketRequire.resolve(specifier, { paths: [AGGREGATE_DIR, ROOT] })
+  } catch {
+    return fallback
+  }
+}
+const PLUGINS_FILE = resolveFamilyAsset(
+  '@linxin666/dsh-client-ui-community-plugins/community.json',
+  path.join(ROOT, 'packages', 'dsh-community-plugins', 'community.json'),
+)
+const SKIN_CENTER_LIB = resolveFamilyAsset(
+  '@linxin666/dsh-client-ui-skin-center',
+  path.join(ROOT, 'packages', 'skins', 'skin-center', 'lib', 'index.js'),
+)
 const PRESETS_DIR = path.join(ROOT, 'packages', 'dsh-preset-center', 'presets')
 const PRESET_CATALOG = path.join(PRESETS_DIR, 'catalog.json')
 const INSTALLER_SOURCE = path.join(ROOT, 'packages', 'dsh-market', 'src', 'core', 'installer.ts')
@@ -746,7 +781,7 @@ async function main() {
     pet: new Set(pets.map(({ item }) => item.id)),
     plugin: new Set(plugins.map(({ item }) => item.id)),
   })
-  const skinCenter = await import(pathToFileURL(path.join(ROOT, 'packages', 'skins', 'skin-center', 'lib', 'index.js')).href)
+  const skinCenter = await import(pathToFileURL(SKIN_CENTER_LIB).href)
   const transformSkinCss = skinCenter.transformSkinCss
 
   // static sources
