@@ -48,8 +48,11 @@ test('skins.json 契约与资产存在性', () => {
       const skinJson = JSON.parse(fs.readFileSync(sourceManifest, 'utf8'))
       const expected = skinJson.sourceUrl ?? `${SKINS_REPO}/${item.id}`
       assert.equal(item.repo, expected, 'skin repo must mirror the catalog source: ' + item.id)
-    } else {
-      assert.ok(item.repo.startsWith(SKINS_REPO), 'skin repo must point at the catalog repository: ' + item.id)
+      // Only a skin without an upstream sourceUrl of its own points at the
+      // catalog path; one that declares a sourceUrl legitimately points there.
+      if (!skinJson.sourceUrl) {
+        assert.ok(item.repo.startsWith(SKINS_REPO), 'skin repo must point at the catalog repository: ' + item.id)
+      }
     }
     assert.ok(/^https:\/\//.test(item.repo), 'skin repo must be https: ' + item.id)
     const bg = item.contributes && item.contributes.backgroundMedia

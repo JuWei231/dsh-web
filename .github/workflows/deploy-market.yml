@@ -72,8 +72,11 @@ jobs:
       - name: Fetch market content inputs
         run: node scripts/market-fetch-inputs.mjs
 
+      # The community index is validated in its own repository and consumed here
+      # at the commit pinned in market-inputs.lock.json, so this lane runs only
+      # the gates that belong to this repository.
       - name: Market consistency
-        run: pnpm market:check && pnpm community:check && pnpm test:scripts
+        run: pnpm market:check && pnpm test:scripts
 
       - name: Install wrangler
         run: npm install -g wrangler@4

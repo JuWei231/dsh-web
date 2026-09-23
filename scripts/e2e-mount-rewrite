@@ -34,6 +34,7 @@ const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
 const { execFileSync } = require('node:child_process')
+const semver = require('semver')
 
 const FAMILY_SCOPE = '@linxin666/'
 const REGISTRY = 'https://registry.npmjs.org'
@@ -41,12 +42,31 @@ const REGISTRY = 'https://registry.npmjs.org'
 /** GNU tar reads a `C:\...` argument as a remote host spec; --force-local keeps it a local path. */
 const TAR_LOCAL = process.platform === 'win32' ? ['--force-local'] : []
 
-/** Default registry probe: true when name@version exists on npm. */
-async function checkPublished(name, version) {
+/**
+ * True when a dependency spec is served by the published version list.
+ *
+ * The spec is an exact version for family packages declared through the
+ * workspace protocol (pnpm writes the resolved version into the packed
+ * tarball) and a semver range for plugins consumed straight from npm, so both
+ * shapes must be evaluated. A range has to resolve against some published
+ * version; treating it as an exact version makes an already-released package
+ * look unpublished, and the gate then substitutes a workspace tarball that no
+ * longer exists.
+ */
+function resolvesFromPublished(spec, versions) {
+  if (typeof spec !== 'string' || spec === '') return false
+  if (versions.includes(spec)) return true
+  if (!semver.validRange(spec)) return false
+  return versions.some(version => semver.satisfies(version, spec))
+}
+
+/** Default registry probe: true when the dependency spec resolves from npm. */
+async function checkPublished(name, spec) {
   const res = await fetch(REGISTRY + '/' + name.replace('/', '%2f'))
   if (!res.ok) return false
   const data = await res.json()
-  return Boolean(data.versions && data.versions[version])
+  const versions = Array.isArray(data.versions) ? data.versions : Object.keys(data.versions ?? {})
+  return resolvesFromPublished(spec, versions)
 }
 
 /**
@@ -309,5 +329,12 @@ async function main() {
 
 if (require.main === module) main()
 
-module.exports = { rewriteDependencies, findWorkspacePackage, checkPublished, packWorkspace, FAMILY_SCOPE }
+module.exports = {
+  rewriteDependencies,
+  findWorkspacePackage,
+  checkPublished,
+  resolvesFromPublished,
+  packWorkspace,
+  FAMILY_SCOPE,
+}
 
